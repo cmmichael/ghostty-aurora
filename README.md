@@ -37,3 +37,7 @@ custom-shader=~/ghostty-aurora/cursor.glsl # Optional shader for the cursor.
 ```
 
 You may also add your own theme directly in the shader.
+
+## Credits
+
+`cursor.glsl` is a pruned down version of https://github.com/0xhckr/ghostty-shaders/blob/main/cursor_blaze.glsl.
