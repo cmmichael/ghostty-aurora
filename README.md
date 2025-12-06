@@ -27,6 +27,8 @@ Add the shader path to your Ghostty configuration file (usually located at `~/.c
 
 ```ini
 # ~/.config/ghostty/config
+# On mac, this file may be at:
+# /Users/$USER/Library/Application Support/com.mitchellh.ghostty/config
 
 # Main Aurora Shader
 custom-shader = ~/.config/ghostty/shaders/ghostty-aurora/aurora.glsl
