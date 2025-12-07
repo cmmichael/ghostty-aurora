@@ -321,7 +321,7 @@ vec4 getSnakeGradientColor(float t) {
 // Calculates the final snake color vector based on position and time
 vec4 calculateSnakeLayer(vec2 centerPos, float time) {
   float angle = atan(centerPos.y, centerPos.x);
-  float normAngle = fract((angle / (PI * 2)) + 0.5 - (time * SPEED));
+  float normAngle = fract((angle / (PI * 2.0)) + 0.5 - (time * SPEED));
   return getSnakeGradientColor(normAngle);
 }
 
