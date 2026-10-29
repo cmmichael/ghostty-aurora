@@ -39,6 +39,8 @@ custom-shader = ~/.config/ghostty/shaders/ghostty-aurora/aurora.glsl
 
 > **Note:** If you cloned it to your home folder instead, use `custom-shader=~/ghostty-aurora/aurora.glsl`.
 
+> **Note:** `aurora.glsl` reads the `iBackgroundColor` uniform to tell the terminal background from text. Use a Ghostty build that provides it (current Ghostty main does); older builds will fail to compile the shader.
+
 ## 🎨 Themes
 
 `ghostty-aurora` comes with pre-configured palettes to match popular terminal themes. 

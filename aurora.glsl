@@ -28,8 +28,13 @@ const float DECAY_RATE = 8.0;
 const float GLOW_CUTOFF_DISTANCE = 0.3;
 const float GLOW_CUTOFF_SOFTNESS = 0.5;
 
-// Dithering Strength
-const float DITHER_STRENGTH = 1.0 / 50.0;
+// Output dithering amplitude, about one 8-bit step (applied after compositing)
+const float DITHER_STRENGTH = 1.0 / 255.0;
+
+// How close a terminal pixel must be to iBackgroundColor to count as background.
+// Glow is drawn only there, so text and coloured cells stay crisp.
+const float BG_MATCH_NEAR = 0.04;
+const float BG_MATCH_FAR = 0.12;
 
 // Opacity settings
 const float GLOW_OPACITY = 1.0;
@@ -351,8 +356,11 @@ vec3 applyDither(vec3 color, vec2 fragCoord) {
 }
 
 vec3 compositeLayer(vec4 terminalPixel, vec3 snakeColor, float snakeAlpha) {
-  // Determine if the current pixel is "background" (dark) or "text" (bright)
-  float isBackground = 1.0 - step(0.5, dot(terminalPixel.rgb, vec3(1.0)));
+  // Determine if the current pixel is the terminal background or text. Compare
+  // against the real background colour: a fixed brightness cutoff hid the glow
+  // on dark themes such as Dracula and Nord, and on light themes.
+  float bgDistance = distance(terminalPixel.rgb, iBackgroundColor);
+  float isBackground = 1.0 - smoothstep(BG_MATCH_NEAR, BG_MATCH_FAR, bgDistance);
 
   // Mix the terminal background with the glow
   vec3 backgroundWithGlow = mix(terminalPixel.rgb, snakeColor, snakeAlpha * GLOW_OPACITY);
@@ -385,12 +393,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   float finalSnakeAlpha = snakeLayer.a * glowIntensity * BRIGHTNESS;
   vec3 snakeRGB = snakeLayer.rgb;
 
-  // Apply Dithering
-  snakeRGB = applyDither(snakeRGB, fragCoord);
-  
   // Composite with Terminal Texture
   vec4 terminalColor = texture(iChannel0, uv);
   vec3 finalColor = compositeLayer(terminalColor, snakeRGB, finalSnakeAlpha);
+
+  // Dither last, just before 8-bit output. Dithering the glow colour before
+  // blending scaled the noise down by alpha.
+  finalColor = applyDither(finalColor, fragCoord);
 
   // Output
   fragColor = vec4(finalColor, terminalColor.a);
